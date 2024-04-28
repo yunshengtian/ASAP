@@ -3,7 +3,6 @@ assets/train_assembly
 assets/test_assembly
 plan_sequence/generator/network/*.pt
 *.sdf
-*.obj
 *.dae
 *.zip
 

@@ -1,0 +1,75 @@
+<redmax model="robotiq_2f85_description">
+    <option integrator="BDF1" timestep="5e-3" gravity="0. 0. 0."/>
+
+    <default>
+        <joint lim_stiffness="1e5" damping="1e4"/>
+        <general_SDF_contact kn="1e5" kt="5e3" mu="1.0" damping="1e3"/>
+    </default>
+
+    <robot>
+        <link name="robotiq_base">
+            <joint name="robotiq_base" type="fixed" pos="0 0 0" quat="1 0 0 0"/>
+            <body name= "robotiq_base" type = "abstract" pos = "0.021987 -2.3545999999999998e-08 3.0162999999999998" quat = "0.49485077759345847 -0.49486708524253414 0.5050804675842179 0.505097017535855" mass = "309.15" inertia = "1991.0205576589547 2897.5794421508826 3073.7000001901624" rgba = "0.1 0.1 0.1 1.0">
+                <visual mesh = "visual/robotiq_base_fine.obj" pos = "3.016118516401935 -0.03972673137057899 -9.987852287331581e-07" quat = "-0.49485077759345847 -0.4948670852425342 0.5050804675842179 0.5050970175358551"/>
+                <collision contacts = "contacts/robotiq_base_coarse.txt" pos = "3.016118516401935 -0.03972673137057899 -9.987852287331581e-07" quat = "-0.49485077759345847 -0.4948670852425342 0.5050804675842179 0.5050970175358551"/>
+            </body>
+            <link name="left_outer_knuckle">
+                <joint name = "left_outer_knuckle" type="revolute" pos="3.06011444260539 0.0 6.27920162695395" quat="1.0 0.0 0.0 0.0" axis="0.0 -1.0 0.0" lim="0.0 0.8757"/>
+                <body name= "left_outer_knuckle" type = "abstract" pos = "1.78331863169983 3.6891517722428598e-09 0.21442477325703999" quat = "0.7053225460285154 0.7053225669677656 0.05020050977213031 -0.05020051203396945" mass = "6.84838849434396" inertia = "2.4595123216989148 12.869141660074247 13.889233257418997" rgba = "0.1 0.1 0.1 1.0">
+                    <visual mesh = "visual/outer_knuckle_fine.obj" pos = "-1.7349731028339714 -0.4648350868821647 1.9413164806783287e-08" quat = "-0.7053225460285154 0.7053225669677657 0.05020050977213033 -0.05020051203396946"/>
+                    <collision contacts = "contacts/outer_knuckle_coarse.txt" pos = "-1.7349731028339714 -0.4648350868821647 1.9413164806783287e-08" quat = "-0.7053225460285154 0.7053225669677657 0.05020050977213033 -0.05020051203396946"/>
+                </body>
+                <link name="left_outer_finger">
+                    <joint name="left_outer_finger" type="fixed" pos="3.16910442266543 0.0 -0.193396375724605" quat="1.0 0.0 0.0 0.0"/>
+                    <body name= "left_outer_finger" type = "SDF" filename="visual/outer_finger_fine.obj" pos = "0 0 0" quat = "1 0 0 0" transform_type="OBJ_TO_JOINT" mass = "27.3093985570947" inertia = "22.26644911333689 69.133328065108 85.39719693716341" dx="0.1" rgba = "0.1 0.1 0.1 1.0"/>
+                </link>
+            </link>
+            <link name="left_inner_knuckle">
+                <joint name = "left_inner_knuckle" type="revolute" pos="1.27000000001501 0.0 6.93074999999639" quat="1.0 0.0 0.0 0.0" axis="0.0 -1.0 0.0" lim="0.0 0.8757"/>
+                <body name= "left_inner_knuckle" type = "abstract" pos = "1.7097546626628002 -3.93808524389535e-08 2.2491843820186803" quat = "0.89587032938746 -2.491218158807403e-09 0.444315600584994 2.5520901079920864e-09" mass = "11.0930853895903" inertia = "18.810790535511387 39.65487905243921 55.93528682194343" rgba = "0.1 0.1 0.1 1.0">
+                    <visual mesh = "visual/inner_knuckle_fine.obj" pos = "0.7558843205358462 5.592267683121108e-08 -2.7222656528674785" quat = "0.8958703293874599 2.491218158807403e-09 -0.44431560058499403 -2.5520901079920868e-09"/>
+                    <collision contacts = "contacts/inner_knuckle_coarse.txt" pos = "0.7558843205358462 5.592267683121108e-08 -2.7222656528674785" quat = "0.8958703293874599 2.491218158807403e-09 -0.44431560058499403 -2.5520901079920868e-09"/>
+                </body>
+                <link name="left_inner_finger">
+                    <joint name = "left_inner_finger" type="revolute" pos="3.4585310861294003 0.0 4.5497019381797505" quat="1.0 0.0 0.0 0.0" axis="0.0 -1.0 0.0" lim="0.0 0.8757"/>
+                    <body name= "left_inner_finger" type = "SDF" filename="visual/inner_finger_fine.obj" pos = "0 0 0" quat = "1 0 0 0" transform_type="OBJ_TO_JOINT" mass = "7.24255346165745" inertia = "3.696209112196339 15.857731661547602 17.006448083839505" dx="0.1" rgba = "0.1 0.1 0.1 1.0"/>
+                </link>
+            </link>
+            <link name="right_outer_knuckle">
+                <joint name = "right_outer_knuckle" type="revolute" pos="-3.06011444258893 0.0 6.27920162695395" quat="1.6155445744325867e-15 0.0 0.0 1.0" axis="0.0 -1.0 0.0" lim="0.0 0.8757"/>
+                <body name= "right_outer_knuckle" type = "abstract" pos = "1.78097074051638 3.6049321142402403e-09 0.233123458346721" quat = "0.7050494861676267 0.7050495070788123 0.053899973903378987 -0.05389997621432349" mass = "6.84838849401352" inertia = "2.459512320189542 12.86914165933995 13.889233255831202" rgba = "0.1 0.1 0.1 1.0">
+                    <visual mesh = "visual/outer_knuckle_fine.obj" pos = "-1.7248376128552523 -0.5011372413688588 2.023921836042513e-08" quat = "-0.7050494861676265 0.7050495070788122 0.05389997390337897 -0.05389997621432347"/>
+                    <collision contacts = "contacts/outer_knuckle_coarse.txt" pos = "-1.7248376128552523 -0.5011372413688588 2.023921836042513e-08" quat = "-0.7050494861676265 0.7050495070788122 0.05389997390337897 -0.05389997621432347"/>
+                </body>
+                <link name="right_outer_finger">
+                    <joint name="right_outer_finger" type="fixed" pos="3.1709590936724603 0.0 -0.16013564954687" quat="1.0 0.0 0.0 0.0"/>
+                    <body name= "right_outer_finger" type = "SDF" filename="visual/outer_finger_fine.obj" pos = "0 0 0" quat = "1 0 0 0" transform_type="OBJ_TO_JOINT" mass = "27.3093985570947" inertia = "22.26644911333692 69.13332806510809 85.39719693716349" dx="0.1" rgba = "0.1 0.1 0.1 1.0"/>
+                </link>
+            </link>
+            <link name="right_inner_knuckle">
+                <joint name = "right_inner_knuckle" type="revolute" pos="-1.26999999998499 0.0 6.93075000000361" quat="1.6155445744325867e-15 0.0 0.0 1.0" axis="0.0 1.0 0.0" lim="-0.8757 0.0"/>
+                <body name= "right_inner_knuckle" type = "abstract" pos = "1.68606186773776 3.93808471820465e-08 2.26699950793434" quat = "2.001598588782668e-09 0.4490093348676038 -3.0817911116792405e-09 0.8935270657354214" mass = "11.0930853895903" inertia = "18.810790535511323 39.65487905243919 55.935286821943464" rgba = "0.1 0.1 0.1 1.0">
+                    <visual mesh = "visual/inner_knuckle_fine.obj" pos = "-0.8128393608576694 5.848825641126382e-08 -2.7058055296444303" quat = "-2.0015985887826684e-09 0.44900933486760375 -3.081791111679241e-09 0.8935270657354214"/>
+                    <collision contacts = "contacts/inner_knuckle_coarse.txt" pos = "-0.8128393608576694 5.848825641126382e-08 -2.7058055296444303" quat = "-2.0015985887826684e-09 0.44900933486760375 -3.081791111679241e-09 0.8935270657354214"/>
+                </body>
+                <link name="right_inner_finger">
+                    <joint name = "right_inner_finger" type="revolute" pos="3.41060475457406 0.0 4.58573878541688" quat="1.0 0.0 0.0 0.0" axis="0.0 1.0 0.0" lim="-0.8757 0.0"/>
+                    <body name= "right_inner_finger" type = "SDF" filename="visual/inner_finger_fine.obj" pos = "0 0 0" quat = "1 0 0 0" transform_type="OBJ_TO_JOINT" mass = "7.24255346165744" inertia = "3.6962091121963243 15.857731661547593 17.0064480838394" dx="0.1" rgba = "0.1 0.1 0.1 1.0"/>
+                </link>
+            </link>
+        </link>
+    </robot>
+
+    <contact>
+        <general_SDF_contact general_body="left_outer_finger" SDF_body="left_inner_finger"/>
+        <general_SDF_contact general_body="left_inner_finger" SDF_body="left_outer_finger"/>
+        <general_SDF_contact general_body="right_outer_finger" SDF_body="right_inner_finger"/>
+        <general_SDF_contact general_body="right_inner_finger" SDF_body="right_outer_finger"/>
+	</contact>
+
+    <actuator>
+        <motor joint="left_outer_knuckle" ctrl="force" ctrl_range="-1e5 1e5"/>
+        <motor joint="right_outer_knuckle" ctrl="force" ctrl_range="-1e5 1e5"/>
+    </actuator>
+
+</redmax>

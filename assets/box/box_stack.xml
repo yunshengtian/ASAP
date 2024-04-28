@@ -1,0 +1,30 @@
+<redmax model="box_stack">
+    <option integrator="BDF1" timestep="1e-3" gravity="0. 0. -9.8"/>
+
+    <ground pos="0 0 0" normal="0 0 1"/>
+    <default>
+        <ground_contact kn="1e5" kt="1e3" mu="0.8" damping="5e1"/>
+        <general_SDF_contact kn="1e5" kt="5e3" mu="1.0" damping="1e3"/>
+    </default>
+
+    <robot>
+        <link name="mesh1">
+            <joint name="mesh1" type="free3d" axis="0. 0. 0." pos="0 0 10." quat="1 0 0 0" frame="WORLD" damping="0"/>
+            <body name="mesh1" type="mesh" filename="cube_dense.obj" pos="-2 -2 -2" quat="1 0 0 0" scale="4 4 4" transform_type="OBJ_TO_JOINT" density="1" mu="0" rgba="0.42 0.65 0.63 1"/>
+        </link>
+    </robot>
+
+    <robot>
+        <link name="box1">
+            <joint name="box1" type="free3d" axis="0. 0. 0." pos="0. 0. 5." quat="1 0 0 0" frame="WORLD" damping="0"/>
+            <body name="box1" type="SDF" filename="cube.obj" scale="4 4 4" pos="-2 -2 -2" quat="1 0 0 0" transform_type="OBJ_TO_JOINT" dx="0.1" density="1" mu="0" rgba="0.82 0.72 0.58 1"/>
+        </link>
+    </robot>
+
+    <contact>
+		<ground_contact body="mesh1"/>
+        <ground_contact body="box1"/>
+        <general_SDF_contact general_body="mesh1" SDF_body="box1"/>
+	</contact>
+
+</redmax>

@@ -1,3 +1,16 @@
+# Project-specific
+assets/train_assembly
+assets/test_assembly
+plan_sequence/generator/network/*.pt
+*.sdf
+*.obj
+*.dae
+*.zip
+
+.vscode
+.DS_Store
+__MACOSX
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

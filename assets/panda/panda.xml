@@ -1,0 +1,74 @@
+
+<redmax model="panda">
+
+<option integrator="BDF1" timestep="1e-3" gravity="0. 0. 1e-12"/>
+
+<default>
+    <joint lim_stiffness="1e2" damping="1"/>
+    <ground_contact kn="1e6" kt="1e3" mu="0.8" damping="5e1"/>
+    <general_SDF_contact kn="1e5" kt="1e3" mu="0.1" damping="1"/>
+</default>
+
+<robot>
+    <link name="panda_link0">
+        <joint name="panda_joint0" type="fixed" pos="0 0 0" quat="1 0 0 0"/>
+        <body name="panda_link0" type="SDF" dx="1" scale="1 1 1" filename="collision/link0.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+        <link name="panda_link1">
+            <joint name="panda_joint1" type="revolute" axis="0 0 1" pos="0 0 33.3" quat="1 0 0 0" lim="-2.9671 2.9671"/>
+            <body name="panda_link1" type="SDF" dx="1" scale="1 1 1" filename="collision/link1.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+            <link name="panda_link2">
+                <joint name="panda_joint2" type="revolute" axis="0 0 1" pos="0 0 0" quat="-0.7071068 0.7071068 0 0" lim="-1.8326 1.8326"/>
+                <body name="panda_link2" type="SDF" dx="1" scale="1 1 1" filename="collision/link2.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+                <link name="panda_link3">
+                    <joint name="panda_joint3" type="revolute" axis="0 0 1" pos="0 -31.6 0" quat="0.7071068 0.7071068 0 0" lim="-2.9671 2.9671"/>
+                    <body name="panda_link3" type="SDF" dx="1" scale="1 1 1" filename="collision/link3.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+                    <link name="panda_link4">
+                        <joint name="panda_joint4" type="revolute" axis="0 0 1" pos="8.25 0 0" quat="0.7071068 0.7071068 0 0" lim="-3.1416 3.1416"/>
+                        <body name="panda_link4" type="SDF" dx="1" scale="1 1 1" filename="collision/link4.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+                        <link name="panda_link5">
+                            <joint name="panda_joint5" type="revolute" axis="0 0 1" pos="-8.25 3.84 0" quat="-0.7071068 0.7071068 0 0" lim="-2.9671 2.9671"/>
+                            <body name="panda_link5" type="SDF" dx="1" scale="1 1 1" filename="collision/link5.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+                            <link name="panda_link6">
+                                <joint name="panda_joint6" type="revolute" axis="0 0 1" pos="0 0 0" quat="0.7071068 0.7071068 0 0" lim="-0.0873 3.8223"/>
+                                <body name="panda_link6" type="SDF" dx="1" scale="1 1 1" filename="collision/link6.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+                                <link name="panda_link7">
+                                    <joint name="panda_joint7" type="revolute" axis="0 0 1" pos="8.8 0 0" quat="0.7071068 0.7071068 0 0" lim="-2.9671 2.9671"/>
+                                    <body name="panda_link7" type="SDF" dx="1" scale="1 1 1" filename="collision/link7.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+                                    <link name="panda_link8">
+                                        <joint name="panda_joint8" type="fixed" pos="0 0 10.7" quat="1 0 0 0"/>
+                                        <body name="panda_link8" type="sphere" radius="0.01" pos="0 0 0" quat="1 0 0 0"/>
+                                        <link name="panda_hand">
+                                            <joint name="panda_hand_joint" type="fixed" pos="0 0 0" quat="0.9238795 0 0 -0.3826834"/>
+                                            <body name="panda_hand" type="SDF" dx="1" scale="1 1 1" filename="collision/hand.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+                                            <link name="panda_leftfinger">
+                                                <joint name="panda_finger_joint1" type="prismatic" axis="0 1 0" pos="0 0 5.84" quat="1 0 0 0" lim="0.0 4"/>
+                                                <body name="panda_leftfinger" type="SDF" dx="1" scale="1 1 1" filename="collision/finger.obj" pos="0 0 0" quat="1 0 0 0" transform_type="OBJ_TO_JOINT"/>
+                                            </link>
+                                            <link name="panda_rightfinger">
+                                                <joint name="panda_finger_joint2" type="prismatic" axis="0 -1 0" pos="0 0 5.84" quat="1 0 0 0" lim="0.0 4"/>
+                                                <body name="panda_rightfinger" type="SDF" dx="1" scale="1 1 1" filename="collision/finger.obj" pos="0 0 0" quat="0 0 0 1" transform_type="OBJ_TO_JOINT"/>
+                                            </link>
+                                        </link>
+                                    </link>
+                                </link>
+                            </link>
+                        </link>
+                    </link>
+                </link>
+            </link>
+        </link>
+    </link>
+</robot>
+
+<actuator>
+    <motor joint="panda_joint1" ctrl="force" ctrl_range="-1 1"/>
+    <motor joint="panda_joint2" ctrl="force" ctrl_range="-1 1"/>
+    <motor joint="panda_joint3" ctrl="force" ctrl_range="-1 1"/>
+    <motor joint="panda_joint4" ctrl="force" ctrl_range="-1 1"/>
+    <motor joint="panda_joint5" ctrl="force" ctrl_range="-1 1"/>
+    <motor joint="panda_joint6" ctrl="force" ctrl_range="-1 1"/>
+    <motor joint="panda_joint7" ctrl="force" ctrl_range="-1 1"/>
+    <motor joint="panda_finger_joint1" ctrl="force" ctrl_range="-1 1"/>
+    <motor joint="panda_finger_joint2" ctrl="force" ctrl_range="-1 1"/>
+</actuator>
+</redmax>

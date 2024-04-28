@@ -1,0 +1,35 @@
+<redmax model="assemble">
+<option integrator="BDF1" timestep="1e-3" gravity="0. 0. -9.8"/>
+
+<ground pos="0 0 -10" normal="0 0 1"/>
+<default>
+    <ground_contact kn="1e6" kt="1e3" mu="0.8" damping="5e1"/>
+</default>
+
+<robot>
+    <link name="base">
+        <joint name="base" type="free3d-exp" axis="0 0 0" pos="0 0 5" quat="0 0 0 1" damping="0"/>
+        <body name="base" type="cuboid" size="12 1 3" pos="0 0 0" quat="1 0 0 0" density="10" rgba="0.2 0.2 0.2 1"/>
+        <link name="finger0">
+            <joint name="finger0" type="prismatic" axis="1 0 0" pos="-5.5 0 -4" quat="1 0 0 0" damping="0" lim="0 5.5"/>
+            <body name="finger0" type="cuboid" size="1 1 5" pos="0 0 0" quat="1 0 0 0" density="2" rgba="0.7 0.7 0.7 1"/>
+        </link>
+        <link name="finger1">
+            <joint name="finger1" type="prismatic" axis="1 0 0" pos="5.5 0 -4" quat="1 0 0 0" damping="0" lim="-5.5 0"/>
+            <body name="finger1" type="cuboid" size="1 1 5" pos="0 0 0" quat="1 0 0 0" density="2" rgba="0.7 0.7 0.7 1"/>
+        </link>
+    </link>
+</robot>
+
+<contact>
+    <ground_contact body="base"/>
+    <ground_contact body="finger0"/>
+    <ground_contact body="finger1"/>
+</contact>
+
+<actuator>
+    <motor joint="base" ctrl="position" P="1e5" D="1e3" ctrl_range="-3e5 3e5"/>
+    <motor joint="finger0" ctrl="position" P="1e4" D="1e3" ctrl_range="-3e3 3e3"/>
+    <motor joint="finger1" ctrl="position" P="1e4" D="1e3" ctrl_range="-3e3 3e3"/>
+</actuator>
+</redmax>

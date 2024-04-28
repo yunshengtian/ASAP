@@ -24,7 +24,7 @@ This repository contains the official code and dataset of [ASAP: Automated Seque
 ### 1. Clone repository
 
 ```
-git clone --recurse-submodules git@github.com:yunshengtian/RobotAssembly.git
+git clone git@github.com:yunshengtian/RobotAssembly.git
 ```
 
 ### 2. Python environment
@@ -52,9 +52,6 @@ To test if the installation steps are successful, run:
 ```
 python test_sim/test_simple_sim.py --model box/box_stack --steps 2000
 ```
-
-Then the simulation viewer should appear. [Here](https://github.com/yunshengtian/Assemble-Them-All?tab=readme-ov-file#simulation-viewer) are some tips on interacting with the viewer. 
-Additionally, press `V` for outputting the camera parameters (lookat and pos).
 
 We also provide a beam assembly under ``assets/beam_assembly`` folder. To visualize the simulation of that, run:
 
@@ -180,6 +177,32 @@ To check success rates quantitatively, run:
 ```
 python plan_sequence/check_success_rate_batch.py --log-dir {log-dir}/g{max-gripper}
 ```
+
+## Simulation Viewer
+
+Some tips to interact with the simulation viewer:
+
+- Scroll your mouse wheel to zoom in/out.
+- Move your mouse while holding down the left mouse button to rotate the camera.
+- Move your mouse while holding down ``Shift`` + left mouse button to move around the scene.
+- Press ``S`` to slow down and ``F`` to speed up the simulation.
+- Press ``Space`` to pause/resume the simulation.
+- Press ``V`` for outputting the camera parameters (lookat and pos).
+
+## Custom Assembly Usage
+
+To run the algorithm on your custom assembly meshes, some pre-processing on the meshes need to be done since the meshes could be of arbitrary scales and the vertex density of meshes may not be enough for accurate point-based collision checking.
+
+We provide a pre-processing script `assets/process_mesh.py` that rescales the custom meshes to provide an unified input to the algorithm. Assume you have a set of .obj meshes placed under `source_dir/` that form an assembly and are all in the assembled states. Run:
+
+```
+python assets/process_mesh.py --source-dir source_dir/ --target-dir target_dir/ --subdivide
+```
+
+Then, all the pre-processed meshes will be written to the output directory `target_dir/`. 
+
+To run our algorithm on top of them, just specify `--dir` and `--id` accordingly for the scripts in the above [Experiments section](https://github.com/yunshengtian/ASAP#experiments) to make sure they can find `target_dir/`.
+
 
 ## Contact
 

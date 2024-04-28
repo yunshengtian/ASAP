@@ -133,6 +133,7 @@ Important arguments include (see the complete list in `plan_sequence/play_logged
 - `show-fix`: whether to show fixed parts in rendering (in grey)
 - `show-grasp`: whether to show gripper grasp in rendering
 - `show-arm`: whether to show arm motion in rendering
+- `camera-lookat` and `camera-pos`: camera view parameters (to find the best view for rendering, you can do that by pressing ``V`` in simulation viewer when testing the simulation for your assembly, also see the below [Simulation Viewer section](https://github.com/yunshengtian/ASAP#simulation-viewer))
 
 If `save-all` is specified, the results will be saved in `result-dir` with the following structure. 
 Assume there are `N` parts, `N-1` assembly steps, `T` time steps in each assembly step, 

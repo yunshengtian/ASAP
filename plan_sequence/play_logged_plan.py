@@ -151,7 +151,7 @@ def play_logged_plan(asset_folder, assembly_dir, sequence, tree, result_dir, sav
                     n_render = min(3, len(grasps))
                     random_indices = np.random.choice(len(grasps), n_render, replace=False)
                     for idx in random_indices:
-                        grasp = grasps[idx]
+                        grasp = grasps[idx][0]
                         if record_dir_grasp is not None:
                             record_path_grasp = os.path.join(record_dir_grasp, f'{i}_{part_move}_g{idx}.mp4' if make_video else f'{i}_{part_move}_g{idx}.gif')
                         else:

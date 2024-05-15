@@ -168,7 +168,7 @@ def render_path_with_grasp(asset_folder, assembly_dir, move_id, still_ids, remov
         print('no path found')
         return
 
-    gripper_pos, gripper_quat = grasp['gripper_pos'], grasp['gripper_quat']
+    gripper_pos, gripper_quat = grasp.pos, grasp.quat
 
     xml_string = create_gripper_with_assembly_posed_xml(
         assembly_dir=assembly_dir, move_id=move_id, still_ids=still_ids, removed_ids=removed_ids, pose=pose,
@@ -179,7 +179,7 @@ def render_path_with_grasp(asset_folder, assembly_dir, move_id, still_ids, remov
     if camera_pos is not None:
         sim.viewer_options.camera_pos = camera_pos
 
-    finger_states = get_gripper_finger_states(gripper_type, grasp['open_ratio'], gripper_scale)
+    finger_states = get_gripper_finger_states(gripper_type, grasp.open_ratio, gripper_scale)
     for finger_name, finger_state in finger_states.items():
         sim.set_joint_q_init(finger_name, np.array(finger_state))
     sim.reset(backward_flag=False)

@@ -29,6 +29,8 @@ git clone git@github.com:yunshengtian/RobotAssembly.git
 
 ### 2. Python environment
 
+#### Step 1:
+
 ```
 conda env create -f environment.yml
 conda activate asap
@@ -37,7 +39,15 @@ conda activate asap
 or
 
 ```
-pip install numpy networkx matplotlib scipy pyglet rtree sortedcontainers scipy tqdm trimesh torch torch_geometric torch_sparse torch_scatter seaborn ikpy pyquaternion
+pip install numpy networkx matplotlib scipy pyglet rtree sortedcontainers scipy tqdm trimesh torch torch_geometric seaborn ikpy pyquaternion
+```
+
+#### Step 2:
+
+Due to dependency issues, the libraries below must be installed after the above step is complete.
+
+```
+pip install torch_sparse torch_scatter
 ```
 
 ### 3. Python binding of simulation

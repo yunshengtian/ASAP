@@ -37,6 +37,8 @@ def get_xml_string(assembly_dir, fixed, transform, body_type, sdf_dx, gravity, f
 </default>
 '''
     for part_id in ['0', '1']:
+        if pos_dict[part_id] is None or quat_dict[part_id] is None:
+            continue
         string += f'''
 <robot>
     <link name="part{part_id}">

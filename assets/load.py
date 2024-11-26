@@ -35,20 +35,28 @@ def load_pos_quat_dict(obj_dir, transform='final'):
     pos_dict, quat_dict = {}, {}
     part_ids = load_part_ids(obj_dir)
     for part_id in part_ids:
-        if config is None or part_id not in config:
-            pos_dict[part_id], quat_dict[part_id] = np.array([0., 0., 0.]), np.array([1., 0., 0., 0.])
-        else:
-            part_cfg = config[part_id]
-            if transform == 'final':
-                state = part_cfg['final_state']
-            elif transform == 'initial':
-                state = part_cfg['initial_state'] if 'initial_state' in part_cfg else None
-            else:
-                raise Exception(f'Unknown transform type: {transform}')
-            if state is not None:
-                pos_dict[part_id], quat_dict[part_id] = q_to_pos_quat(state)
-            else:
+        if transform == 'final':
+            if config is None or part_id not in config:
                 pos_dict[part_id], quat_dict[part_id] = np.array([0., 0., 0.]), np.array([1., 0., 0., 0.])
+            else:
+                part_cfg = config[part_id]
+                state = part_cfg['final_state']
+                if state is not None:
+                    pos_dict[part_id], quat_dict[part_id] = q_to_pos_quat(state)
+                else:
+                    pos_dict[part_id], quat_dict[part_id] = np.array([0., 0., 0.]), np.array([1., 0., 0., 0.])
+        elif transform == 'initial':
+            if config is None or part_id not in config:
+                pos_dict[part_id], quat_dict[part_id] = None, None
+            else:
+                part_cfg = config[part_id]
+                state = part_cfg['initial_state'] if 'initial_state' in part_cfg else None
+                if state is not None:
+                    pos_dict[part_id], quat_dict[part_id] = q_to_pos_quat(state)
+                else:
+                    pos_dict[part_id], quat_dict[part_id] = None, None
+        else:
+            raise Exception(f'Unknown transform type: {transform}')
     return pos_dict, quat_dict
 
 

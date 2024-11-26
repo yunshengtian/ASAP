@@ -37,6 +37,8 @@ def get_xml_string(assembly_dir, part_ids, base_part, fixed, transform, body_typ
 </default>
 '''
     for part_id in part_ids:
+        if pos_dict[part_id] is None or quat_dict[part_id] is None:
+            continue
         if base_part is not None and part_id == base_part:
             part_color = np.array([0.4, 0.4, 0.4, 1.0])
             curr_joint_type = 'fixed'

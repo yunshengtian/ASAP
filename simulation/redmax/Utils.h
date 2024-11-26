@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.h"
+#include <unsupported/Eigen/MatrixFunctions> // For matrix logarithm
 
 namespace redmax {
 
@@ -105,101 +106,6 @@ namespace math {
         return ad;
     }
 
-    inline Matrix3 exp(Vector3 w) {
-        Matrix3 I = Matrix3::Identity();
-        dtype wlen = w.norm();
-        Matrix3 R = I;
-        if (wlen > 1e-12) {
-            w = w / wlen;
-            dtype wx = w(0);
-            dtype wy = w(1);
-            dtype wz = w(2);
-            dtype c = cos(wlen), s = sin(wlen);
-            dtype c1 = (dtype)1.0 - c;
-            R(0, 0) = c + wx * wx * c1; R(0, 1) = -wz * s + wx * wy * c1; R(0, 2) = wy * s + wx * wz * c1;
-            R(1, 0) = wz * s + wx * wy * c1; R(1, 1) = c + wy * wy * c1; R(1, 2) = -wx * s + wy * wz * c1;
-            R(2, 0) = -wy * s + wx * wz * c1; R(2, 1) = wx * s + wy * wz * c1; R(2, 2) = c + wz * wz * c1;
-        }
-        return R;
-    }
-
-    inline Matrix4 exp(Vector6 q) {
-        Matrix3 I = Matrix3::Identity();
-        Vector3 w = q.head(3);
-        dtype wlen = w.norm();
-        Matrix3 R = I;
-        if (wlen > 1e-12) {
-            w = w / wlen;
-            dtype wx = w(0);
-            dtype wy = w(1);
-            dtype wz = w(2);
-            dtype c = cos(wlen), s = sin(wlen);
-            dtype c1 = (dtype)1.0 - c;
-            R(0, 0) = c + wx * wx * c1; R(0, 1) = -wz * s + wx * wy * c1; R(0, 2) = wy * s + wx * wz * c1;
-            R(1, 0) = wz * s + wx * wy * c1; R(1, 1) = c + wy * wy * c1; R(1, 2) = -wx * s + wy * wz * c1;
-            R(2, 0) = -wy * s + wx * wz * c1; R(2, 1) = wx * s + wy * wz * c1; R(2, 2) = c + wz * wz * c1;
-        }
-
-        Matrix4 E = Matrix4::Identity();
-        E.topLeftCorner(3, 3) = R;
-        Vector3 v = q.tail(3);
-        if (wlen > 1e-12) {
-            v = v / wlen;
-            Matrix3 A = I - R;
-            Vector3 cc = w.cross(v);
-            Vector3 d = A * cc;
-            dtype wv = w.dot(v);
-            Vector3 p = (wv * wlen) * w + d;
-            E.topRightCorner(3, 1) = p;
-        } else {
-            E.topRightCorner(3, 1) = v;
-        }
-
-        return E;
-    }
-
-    inline VectorX log(MatrixX E) {
-        Matrix3 R = E.topLeftCorner(3, 3);
-        dtype cos_theta = std::max(std::min(0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1), 1.0), -1.0);
-        dtype theta = std::acos(cos_theta);
-        dtype sin_theta = std::sin(theta);
-        Matrix3 w_brac;
-        if (std::abs(theta) < 1e-12) {
-            w_brac.setZero();
-        } else {
-            w_brac = theta / (2 * sin_theta) * (R - R.transpose());
-        }
-
-        if (E.rows() == 3) {
-            Vector3 w = unskew(w_brac);
-            return w;
-        } else if (E.rows() == 4) {
-            Matrix4 phi_brac = Matrix4::Zero();
-            phi_brac.topLeftCorner(3, 3) = w_brac;
-            Vector3 p = E.topRightCorner(3, 1);
-            Vector3 v;
-            if (std::abs(theta) < 1e-12) {
-                v = p;
-            } else {
-                Matrix3 V = Matrix3::Identity() + (1 - cos_theta) / (theta * theta) * w_brac + (theta - sin_theta) / (theta * theta * theta) * w_brac * w_brac;
-                v = V.inverse() * p;
-            }
-            phi_brac.topRightCorner(3, 1) = v;
-            Vector6 phi = unskew(phi_brac);
-            return phi;
-        } else {
-            assert(false);
-            return VectorX();
-        }
-    }
-
-    inline MatrixX gamma(Vector3 xi) {
-        MatrixX G(3, 6);
-        G.leftCols(3) = skew(xi).transpose();
-        G.rightCols(3).setIdentity();
-        return G;
-    }
-
     inline Matrix3 euler2mat(Vector3 euler) {
         dtype roll = euler(0), pitch = euler(1), yaw = euler(2);
         dtype cy = std::cos(yaw);
@@ -242,11 +148,103 @@ namespace math {
     inline Matrix3 quat2mat(Vector4 quat) {
         quat.normalize();
         dtype w = quat(0), x = quat(1), y = quat(2), z = quat(3);
-        // Matrix3 mat = (Matrix3() << 1 - 2 * y * y - 2 * z * z, 2 * x * y - 2 * z * w, 2 * x * z + 2 * y * w,
-        //                         2 * x * y + 2 * z * w, 1 - 2 * x * x - 2 * z * z, 2 * y * z - 2 * x * w,
-        //                         2 * x * z - 2 * y * w, 2 * y * z + 2 * x * w, 1 - 2 * x * x - 2 * y * y).finished();
-        // return mat;
         return Eigen::Quaternion<dtype>(w, x, y, z).toRotationMatrix();
+    }
+
+    inline Vector4 mat2quat(Matrix3 mat) {
+        Eigen::Quaternion<dtype> q(mat);
+        return Vector4(q.w(), q.x(), q.y(), q.z());
+    }
+
+    inline Matrix3 cross(const Vector3& v) {
+        Matrix3 skew;
+        skew << 0, -v.z(), v.y(),
+                v.z(), 0, -v.x(),
+                -v.y(), v.x(), 0;
+        return skew;
+    }
+    
+    inline Matrix3 rotvec2mat(const Vector3& w) {
+        // Compute the angle of rotation
+        double theta = w.norm();
+        if (theta < 1e-12) {
+            // Identity rotation
+            return Matrix3::Identity();
+        }
+        // Normalize the rotation vector
+        Vector3 w_unit = w / theta;
+        // Compute the skew-symmetric matrix of the rotation vector
+        Matrix3 w_brac = cross(w_unit);
+        // Compute the rotation matrix using Rodrigues' formula
+        return Matrix3::Identity() + std::sin(theta) * w_brac + (1 - std::cos(theta)) * w_brac * w_brac;
+    }
+
+    inline Vector3 mat2rotvec(const Matrix3& R) {
+        // Ensure R is a valid rotation matrix
+        if (!R.isUnitary() || !R.determinant() == 1.0) {
+            throw std::invalid_argument("Input matrix is not a valid rotation matrix");
+        }
+        // Convert rotation matrix to an Eigen quaternion
+        Eigen::Quaterniond q(R);
+        // Convert quaternion to axis-angle representation
+        Eigen::AngleAxisd angleAxis(q);
+        // Rotation vector (axis scaled by angle in radians)
+        return angleAxis.angle() * angleAxis.axis();
+    }
+
+    inline MatrixX exp(const VectorX& v) {
+        if (v.size() == 3) {
+            // SO(3) case
+            Matrix3 w_brac;
+            w_brac << 0, -v(2), v(1),
+                    v(2), 0, -v(0),
+                    -v(1), v(0), 0; // Skew-symmetric matrix
+            return w_brac.exp(); // Exponential map for SO(3)
+        } else if (v.size() == 6) {
+            // SE(3) case
+            Matrix4 phi_brac = Matrix4::Zero();
+            Vector3 w = v.head<3>();
+            Vector3 t = v.tail<3>();
+            Matrix3 w_brac;
+            w_brac << 0, -w(2), w(1),
+                    w(2), 0, -w(0),
+                    -w(1), w(0), 0; // Skew-symmetric matrix
+            phi_brac.topLeftCorner<3, 3>() = w_brac;
+            Matrix3 V = Matrix3::Identity();
+            double theta = w.norm();
+            if (theta > 1e-12) {
+                Matrix3 w_brac2 = w_brac * w_brac;
+                V += (1 - std::cos(theta)) / (theta * theta) * w_brac
+                    + (theta - std::sin(theta)) / (theta * theta * theta) * w_brac2;
+            }
+            phi_brac.topRightCorner<3, 1>() = V * t;
+            return phi_brac.exp(); // Exponential map for SE(3)
+        } else {
+            throw std::invalid_argument("Invalid vector size for exponential map");
+        }
+    }
+
+    inline VectorX log(const MatrixX& E) {
+        if (E.rows() == 3) {
+            // SO(3) case
+            return mat2rotvec(E.topLeftCorner<3, 3>()); // Extract so(3) vector
+        } else if (E.rows() == 4) {
+            // SE(3) case
+            Matrix4 phi_brac = E.log();
+            VectorX phi(6);
+            phi.head<3>() = mat2rotvec(E.topLeftCorner<3, 3>()); // so(3)
+            phi.tail<3>() = phi_brac.topRightCorner<3, 1>(); // Translation
+            return phi;
+        } else {
+            throw std::invalid_argument("Invalid matrix size for logarithmic map");
+        }
+    }
+
+    inline MatrixX gamma(Vector3 xi) {
+        MatrixX G(3, 6);
+        G.leftCols(3) = skew(xi).transpose();
+        G.rightCols(3).setIdentity();
+        return G;
     }
 
     inline VectorX flatten_R(Matrix3 R) {

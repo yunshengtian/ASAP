@@ -119,8 +119,7 @@ class GraspPlanner:
         
         disassembly_direction = path[-1][:3] - path[0][:3]
         disassembly_direction /= np.linalg.norm(disassembly_direction)
-        disassembly_direction_local = pose[:3, :3].T @ disassembly_direction if pose is not None else disassembly_direction
-        grasps_final = self.generate_grasps(move_mesh_final, disassembly_direction_local)
+        grasps_final = self.generate_grasps(move_mesh_final, disassembly_direction)
 
         grasps = []
         success = False

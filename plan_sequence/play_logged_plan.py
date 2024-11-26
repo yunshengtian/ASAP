@@ -122,7 +122,7 @@ def play_logged_plan(asset_folder, assembly_dir, sequence, tree, result_dir, sav
                 grasps = None
 
             parts_fix = sim_info['parts_fix']
-            parts_free = [part_i for part_i in parts_rest if part_i not in parts_fix] + [part_move]
+            parts_free = [part_i for part_i in parts_rest if parts_fix is None or part_i not in parts_fix] + [part_move]
             
             if show_fix:
                 body_color_dict = get_body_color_dict(parts_fix, parts_free) # visualize fixes

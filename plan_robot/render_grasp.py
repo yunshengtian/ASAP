@@ -188,7 +188,6 @@ def render_path_with_grasp(asset_folder, assembly_dir, move_id, still_ids, remov
         sim.set_body_color_map(body_color_map)
 
     # get gripper path
-    gripper_pos, gripper_quat = get_pos_quat_from_pose(gripper_pos, gripper_quat, pose)
     gripper_path = get_gripper_path_from_part_path(part_path, gripper_pos, gripper_quat)
     
     # transform from global coordinate to local coordinate

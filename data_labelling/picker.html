@@ -63,9 +63,6 @@
             <div class="tutorial-grid-item">
                 <p><strong>Hover mouse over and click</strong> to select part. Part should become colored <strong style="color:rgb(160, 0, 0)">red</strong>.</p>
             </div>
-            <div class="tutorial-grid-item">
-                <p><strong>Press the R key</strong> to reset the assembly's orientation.</p>
-            </div>
         </div>
     </crowd-modal>
 
@@ -121,13 +118,6 @@
                 var tracklight = new THREE.DirectionalLight(0xffffff, 1.75);
                 let camera;
                 let controls;
-
-                // Function to reset controls on pressing 'R' key
-                function onReset(event) {
-                    if (event.code == "KeyR") {
-                        controls.reset();
-                    }
-                }
 
                 // Function to handle pointer movement
                 function onPointerMove(event) {
@@ -257,7 +247,6 @@
                 window.addEventListener('mousedown', registerMouseDown);
                 window.addEventListener('pointermove', onPointerMove);
                 window.addEventListener('click', onClick);
-                window.addEventListener('keypress', onReset);
 
                 // Function to animate the scene
                 function animate() {

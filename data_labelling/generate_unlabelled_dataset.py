@@ -12,7 +12,7 @@ import trimesh
 from assets.load import load_assembly
 
 assembly_name = "beam_assembly"
-assembly_obj_dir = "/home/basselromari/ASAP/assets/beam_assembly/original"
+assembly_obj_dir = "~/ASAP/assets/beam_assembly/original"
 
 
 def export_model(meshes):
@@ -30,7 +30,7 @@ def export_model(meshes):
     return encoded
 
 if __name__ == "__main__":
-    
+
     assembly = load_assembly(assembly_obj_dir)
 
     meshes = [part["mesh"] for part in assembly.values()]

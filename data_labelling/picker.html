@@ -39,12 +39,6 @@
         <iframe width="100%" height="50%" src="https://www.youtube.com/embed/kRzPxvA-GyI?rel=0" title="Disassembly mTurk Task Guide" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </crowd-modal>
 
-    <crowd-modal link-text = "See Examples" link-type = "button">
-        <h2>Examples</h2>
-        <br>
-        <img src="https://assembly-picker-dataset.s3.us-east-2.amazonaws.com/Labeling+Webpage+Elements/LabelingInstructions.jpg" style="width:70%; display: block; margin-left: auto; margin-right: auto;" alt="instructions on correct label for disassembly">
-    </crowd-modal>
-
     <crowd-modal link-text="How to use 3D Model Viewer" link-type="button">
         <h2>How to use the 3D Model Viewer</h2>
         <div class="tutorial-grid-container">
@@ -124,7 +118,8 @@
                     [pointer.x, pointer.y] = getPointer(event);
                     raycaster.setFromCamera(pointer, camera);
 
-                    let children = scene.children[1].children[0].children.slice(1);
+                    let children_all = scene.children[1].children[0].children;
+                    let children = children_all.filter(child => child.type === 'Mesh');
                     const intersects = raycaster.intersectObjects(children);
 
                     if (pointedObject != null && pointedObject != selectedObject) {
@@ -155,7 +150,8 @@
                         [pointer.x, pointer.y] = getPointer(event);
                         raycaster.setFromCamera(pointer, camera);
 
-                        let children = scene.children[1].children[0].children.slice(1);
+                        let children_all = scene.children[1].children[0].children;
+                        let children = children_all.filter(child => child.type === 'Mesh');
                         const intersects = raycaster.intersectObjects(children);
 
                         if (intersects.length > 0) {

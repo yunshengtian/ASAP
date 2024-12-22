@@ -1,0 +1,282 @@
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+
+<style>
+    .tutorial-grid-container {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        padding: 10px;
+    }
+    .tutorial-grid-item {
+        padding: 20px;
+        font-size: 16px;
+        text-align: center;
+    }
+    .tutorial-grid-item > img {
+        width:100%;
+    }
+    #model > canvas {
+        padding: 0;
+        margin: auto;
+    }
+</style>
+
+<crowd-form>
+    <br>
+    <h1>Disassemble this assembly</h1>
+    <h4>Which part would you remove next while keeping the rest of the assembly intact?</h4>
+    <br>
+    <crowd-modal link-text="Instructions" link-type="button">
+        <h2>Instructions</h2>
+        <p>Shown here is a 3D model of a mechanical assembly that we want to disassemble part by part. Help us choose the next part to remove while keeping the assembly intact.</p>
+        <h3>Steps:</h3>
+        <ol>
+            <li>(Optional) Rotate the assembly by clicking and dragging to get a good viewing angle</li>
+            <li>Identify the part to remove next</li>
+            <li>Hover mouse over the part and left-click to select it. Part should turn dark red upon click.</li>
+            <li>Click the Submit button to confirm your answer.</li>
+        </ol>
+        <h3>Video Guide</h3>
+        <iframe width="100%" height="50%" src="https://www.youtube.com/embed/kRzPxvA-GyI?rel=0" title="Disassembly mTurk Task Guide" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </crowd-modal>
+
+    <crowd-modal link-text="How to use 3D Model Viewer" link-type="button">
+        <h2>How to use the 3D Model Viewer</h2>
+        <div class="tutorial-grid-container">
+            <div class="tutorial-grid-item">
+                <p><strong>Scroll Up and Down</strong> to zoom in and out</p>
+            </div>
+            <div class="tutorial-grid-item">
+                <p><strong>Left-click and Drag</strong> to rotate assembly</p>
+            </div>
+            <div class="tutorial-grid-item">
+                <p><strong>Right-click and Drag</strong> to move assembly</p>
+            </div>
+            <div class="tutorial-grid-item">
+                <p><strong>Hovering mouse over part</strong> shades the part <strong style="color:rgb(200, 120, 120)">light red</strong>.</p>
+            </div>
+            <div class="tutorial-grid-item">
+                <p><strong>Hover mouse over and click</strong> to select part. Part should become colored <strong style="color:rgb(160, 0, 0)">red</strong>.</p>
+            </div>
+        </div>
+    </crowd-modal>
+
+    <br>
+    <br>
+
+    <classification-target id="model-box">
+        <div id="model" style="border:1px solid black;">
+            <script type="importmap">
+            {
+                "imports": {
+                    "three": "https://threejs.org/build/three.module.js",
+                    "three/addons/": "https://threejs.org/examples/jsm/"
+                }
+            }</script>
+            <script type="module">
+                // Import necessary modules from three.js
+                import * as THREE from 'three';
+                import { TrackballControls } from "three/addons/controls/TrackballControls.js";
+                import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+                
+                // Function to center controls on the object
+                function centerControls(obj, camera, controls) {
+                    const boundingBox = new THREE.Box3().setFromObject(obj);
+                    const boundingSphere = new THREE.Sphere();
+                    boundingBox.getBoundingSphere(boundingSphere);
+                    controls.update();
+                    controls.target.set(boundingSphere.center.x, boundingSphere.center.y, boundingSphere.center.z);
+                }
+                
+                // Initialize raycaster and pointer for object selection
+                const raycaster = new THREE.Raycaster();
+                const pointer = new THREE.Vector2();
+
+                // Define colors for different states
+                const blandColor = new THREE.Color(0xffffff);
+                const pointColor = new THREE.Color(0xff9090);
+                const selectColor = new THREE.Color(0xff0000);
+
+                // Variables to keep track of selected and pointed objects
+                var pointedObject = null;
+                var selectedObject = null;
+                var selectedObjectFileName = null;
+
+                // Variables for click detection
+                const delta = 6;
+                let startX;
+                let startY;
+
+                // Global scene variables
+                var renderer = new THREE.WebGLRenderer({ antialias: true });
+                var scene = new THREE.Scene();
+                var tracklight = new THREE.DirectionalLight(0xffffff, 1.75);
+                let camera;
+                let controls;
+
+                // Function to handle pointer movement
+                function onPointerMove(event) {
+                    [pointer.x, pointer.y] = getPointer(event);
+                    raycaster.setFromCamera(pointer, camera);
+
+                    let children_all = scene.children[1].children[0].children;
+                    let children = children_all.filter(child => child.type === 'Mesh');
+                    const intersects = raycaster.intersectObjects(children);
+
+                    if (pointedObject != null && pointedObject != selectedObject) {
+                        var newMat = pointedObject.material.clone();
+                        newMat.color.set(blandColor);
+                        pointedObject.material = newMat;
+                        pointedObject = null;
+                    }
+
+                    if (intersects.length > 0) {
+                        pointedObject = intersects[0].object;
+                        if (pointedObject != selectedObject) {
+                            var newMat = pointedObject.material.clone();
+                            newMat.color.set(pointColor);
+                            pointedObject.material = newMat;
+                        }
+                    }
+
+                    render();
+                }
+
+                // Function to handle object selection on click
+                function onClick(event) {
+                    const diffX = Math.abs(event.pageX - startX);
+                    const diffY = Math.abs(event.pageY - startY);
+
+                    if (diffX < delta && diffY < delta) {
+                        [pointer.x, pointer.y] = getPointer(event);
+                        raycaster.setFromCamera(pointer, camera);
+
+                        let children_all = scene.children[1].children[0].children;
+                        let children = children_all.filter(child => child.type === 'Mesh');
+                        const intersects = raycaster.intersectObjects(children);
+
+                        if (intersects.length > 0) {
+                            if (selectedObject != null) {
+                                var newMat = selectedObject.material.clone();
+                                newMat.color.set(blandColor);
+                                selectedObject.material = newMat;
+                                selectedObject = null;
+                            }
+
+                            selectedObject = intersects[0].object;
+                            var newMat = selectedObject.material.clone();
+                            newMat.color.set(selectColor);
+                            selectedObject.material = newMat;
+
+                            selectedObjectFileName = selectedObject.userData.file_name;
+                            setValue(selectedObjectFileName);
+                        }
+
+                        render();
+                    }
+                }
+
+                // Function to set the value of the hidden input field
+                function setValue(val) {
+                    let inputField = document.querySelector("input[name='removed-part']");
+                    inputField.setAttribute("value", val);
+                }
+
+                // Function to get pointer coordinates
+                function getPointer(event) {
+                    let canvasRect = renderer.domElement.getBoundingClientRect();
+                    let canvasWidth = canvasRect.right - canvasRect.left;
+                    let canvasHeight = canvasRect.bottom - canvasRect.top;
+
+                    let px = ((event.clientX - canvasRect.left) / canvasWidth) * 2 - 1;
+                    let py = -((event.clientY - canvasRect.top) / canvasHeight) * 2 + 1;
+                    return [px, py];
+                }
+
+                // Function to register mouse down event
+                function registerMouseDown(event) {
+                    startX = event.pageX;
+                    startY = event.pageY;
+                }
+
+                // Function to initialize the scene with assembly data
+                function init(assemblyData) {
+                    let modelData = assemblyData["model-data"];
+                    scene.background = new THREE.Color(0xffffff);
+                    scene.add(tracklight);
+                    let base64_data = modelData;
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    document.getElementById("model").appendChild(renderer.domElement);
+                    const loader = new GLTFLoader();
+                    loader.load("data:text/plain;base64," + base64_data, function (gltf) {
+                        scene.add(gltf.scene);
+                        camera = gltf.cameras[0];
+                        controls = new TrackballControls(camera, renderer.domElement);
+                        controls.rotateSpeed = 1.0;
+                        controls.zoomSpeed = 1.2;
+                        controls.panSpeed = 0.8;
+                        controls.noZoom = false;
+                        controls.noPan = false;
+                        controls.staticMoving = true;
+                        controls.dynamicDampingFactor = 0.3;
+                        controls.keys = [65, 83, 68];
+                        controls.addEventListener("change", render);
+                        centerControls(scene, camera, controls);
+                        render();
+                        window.addEventListener("resize", onWindowResize, false);
+                        animate();
+                        onWindowResize();
+                    });
+
+                    // Set assembly name in the hidden input field
+                    let assemblyName = assemblyData["assembly-id"];
+                    let inputField;
+                    const interval = setInterval(() => {
+                        inputField = document.querySelector("input[name='did']");
+                        if (inputField) {
+                            clearInterval(interval);
+                            inputField.setAttribute("value", assemblyName);
+                        }
+                    }, 100);
+                }
+
+                // Event listeners for various interactions
+                window.addEventListener('mousedown', registerMouseDown);
+                window.addEventListener('pointermove', onPointerMove);
+                window.addEventListener('click', onClick);
+
+                // Function to animate the scene
+                function animate() {
+                    requestAnimationFrame(animate);
+                    controls.update();
+                }
+
+                // Function to handle window resize
+                function onWindowResize() {
+                    var w = window.innerWidth;
+                    var h = window.innerHeight * 0.6;
+                    renderer.setSize(w, h);
+                    camera.aspect = w / h;
+                    camera.updateProjectionMatrix();
+                    controls.handleResize();
+                    render();
+                }
+
+                // Function to render the scene
+                function render() {
+                    tracklight.position.copy(camera.position);
+                    renderer.render(scene, camera);
+                }
+
+                // Fetch the assembly data and initialize the scene
+                const OBJ_URL = "https://raw.githubusercontent.com/BaselOmari/ASAP-1/refs/heads/bassel/data-labelling/assets/beam_assembly/original/viz_data.json";
+                fetch(OBJ_URL)
+                    .then((response) => response.json())
+                    .then((data) => init(data));
+            </script>
+        </div>
+    </classification-target>
+    <br>
+    <p>Please refresh the page if the 3D model viewer fails to load</p>
+    <input type="text" name="removed-part" value="" required hidden>
+    <input type="text" name="did" value="" hidden>
+</crowd-form>

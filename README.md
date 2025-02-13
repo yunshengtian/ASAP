@@ -24,7 +24,7 @@ This repository contains the official code and dataset of [ASAP: Automated Seque
 ### 1. Clone repository
 
 ```
-git clone git@github.com:yunshengtian/RobotAssembly.git
+git clone git@github.com:yunshengtian/ASAP.git
 ```
 
 ### 2. Python environment
